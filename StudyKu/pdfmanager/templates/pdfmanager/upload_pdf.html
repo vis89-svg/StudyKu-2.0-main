@@ -1,0 +1,372 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Upload PDF - Study Ku{% endblock %}
+
+{% block extra_css %}
+<style>
+.upload-container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    font-family: "Montserrat", sans-serif;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.page-header h1 {
+    color: #009688;
+    font-size: 48px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.page-header p {
+    font-size: 18px;
+    color: #666;
+}
+
+.upload-form {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 1px solid #e0e0e0;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="file"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #009688;
+    box-shadow: 0 0 0 3px rgba(0,150,136,0.1);
+}
+
+.file-input-wrapper {
+    position: relative;
+    overflow: hidden;
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    padding: 30px;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.file-input-wrapper:hover {
+    border-color: #009688;
+    background-color: rgba(0,150,136,0.05);
+}
+
+.file-input-wrapper.dragover {
+    border-color: #009688;
+    background-color: rgba(0,150,136,0.1);
+}
+
+.file-input-wrapper input[type="file"] {
+    position: absolute;
+    left: -9999px;
+}
+
+.file-upload-text {
+    color: #666;
+}
+
+.file-upload-text i {
+    font-size: 48px;
+    color: #009688;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.file-selected {
+    background-color: rgba(0,150,136,0.1);
+    border-color: #009688;
+}
+
+.file-selected .file-upload-text {
+    color: #009688;
+    font-weight: 600;
+}
+
+.privacy-section {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #009688;
+}
+
+.privacy-toggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.privacy-toggle input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: #009688;
+}
+
+.privacy-info {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+}
+
+.privacy-info i {
+    margin-right: 5px;
+}
+
+.submit-section {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.submit-btn {
+    background: linear-gradient(135deg, #009688, #00796b);
+    color: white;
+    padding: 15px 50px;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,150,136,0.3);
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,150,136,0.4);
+}
+
+.submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: #009688;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.back-link i {
+    margin-right: 5px;
+}
+
+@media (max-width: 768px) {
+    .upload-container {
+        margin: 20px auto;
+        padding: 15px;
+    }
+    
+    .page-header h1 {
+        font-size: 36px;
+    }
+    
+    .upload-form {
+        padding: 25px;
+    }
+    
+    .file-input-wrapper {
+        padding: 20px;
+    }
+    
+    .file-input-wrapper i {
+        font-size: 36px !important;
+    }
+    
+    .submit-btn {
+        padding: 12px 30px;
+        font-size: 16px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="upload-container">
+    <a href="{% url 'search_pdfs' %}" class="back-link">
+        <i class="fa fa-arrow-left"></i> Back to Search
+    </a>
+    
+    <div class="page-header">
+        <h1>Upload PDF</h1>
+        <p>Share your study materials with the community</p>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="upload-form">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="{{ form.name.id_for_label }}">PDF Name</label>
+            {{ form.name }}
+            <small class="form-text">Give your PDF a descriptive name so others can find it easily</small>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.file.id_for_label }}">Select PDF File</label>
+            <div class="file-input-wrapper" id="file-wrapper" onclick="document.getElementById('id_file').click()">
+                <input type="file" name="file" accept=".pdf" required id="id_file" style="position: absolute; left: -9999px;">
+                <div class="file-upload-text">
+                    <i class="fa fa-cloud-upload"></i>
+                    <div id="upload-text">
+                        <strong>Click to browse</strong> or drag and drop your PDF here
+                        <br><small>Maximum file size: 50MB</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if user.is_authenticated %}
+        <div class="form-group">
+            <div class="privacy-section">
+                <div class="privacy-toggle">
+                    {{ form.is_private }}
+                    <label for="{{ form.is_private.id_for_label }}">Make this PDF private</label>
+                </div>
+                <div class="privacy-info">
+                    <div><i class="fa fa-globe"></i> <strong>Public:</strong> Anyone can search and view this PDF</div>
+                    <div><i class="fa fa-lock"></i> <strong>Private:</strong> Only you can see this PDF in your "My Notes" section</div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="privacy-section">
+            <div class="privacy-info">
+                <i class="fa fa-info-circle"></i> 
+                <strong>Note:</strong> Your PDF will be public for everyone to search and view. 
+                <a href="{% url 'account_login' %}">Sign in</a> to upload private PDFs.
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="submit-section">
+            <button type="submit" class="submit-btn" id="submit-btn">
+                <i class="fa fa-upload"></i> Upload PDF
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.querySelector('input[type="file"]');
+    const fileWrapper = document.getElementById('file-wrapper');
+    const uploadText = document.getElementById('upload-text');
+    const submitBtn = document.getElementById('submit-btn');
+
+    // File input change handler
+    fileInput.addEventListener('change', function(e) {
+        handleFileSelect(e.target.files);
+    });
+
+    // Drag and drop handlers
+    fileWrapper.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        fileWrapper.classList.add('dragover');
+    });
+
+    fileWrapper.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        fileWrapper.classList.remove('dragover');
+    });
+
+    fileWrapper.addEventListener('drop', function(e) {
+        e.preventDefault();
+        fileWrapper.classList.remove('dragover');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0 && files[0].type === 'application/pdf') {
+            fileInput.files = files;
+            handleFileSelect(files);
+        } else {
+            alert('Please select a valid PDF file.');
+        }
+    });
+
+    // Click handler for wrapper
+    fileWrapper.addEventListener('click', function() {
+        fileInput.click();
+    });
+
+    function handleFileSelect(files) {
+        if (files.length > 0) {
+            const file = files[0];
+            if (file.type === 'application/pdf') {
+                fileWrapper.classList.add('file-selected');
+                uploadText.innerHTML = `
+                    <i class="fa fa-file-pdf-o"></i>
+                    <div>
+                        <strong>${file.name}</strong>
+                        <br><small>Size: ${(file.size / (1024 * 1024)).toFixed(2)} MB</small>
+                    </div>
+                `;
+            } else {
+                alert('Please select a valid PDF file.');
+                fileInput.value = '';
+            }
+        }
+    }
+
+    // Form validation
+    const form = document.querySelector('.upload-form');
+    const nameInput = document.querySelector('input[name="name"]');
+
+    form.addEventListener('submit', function(e) {
+        if (!nameInput.value.trim()) {
+            e.preventDefault();
+            alert('Please enter a name for your PDF.');
+            nameInput.focus();
+            return;
+        }
+
+        if (!fileInput.files.length) {
+            e.preventDefault();
+            alert('Please select a PDF file to upload.');
+            return;
+        }
+
+        // Disable submit button to prevent double submission
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Uploading...';
+    });
+});
+</script>
+{% endblock %}

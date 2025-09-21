@@ -1,0 +1,351 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Notes - Study Ku{% endblock %}
+
+{% block extra_css %}
+<style>
+.my-notes-container {
+    max-width: 1200px;
+    margin: 50px auto;
+    padding: 20px;
+    font-family: "Montserrat", sans-serif;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.page-header h1 {
+    color: #009688;
+    font-size: 48px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.page-header p {
+    font-size: 18px;
+    color: #666;
+}
+
+.search-section {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.search-box {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    max-width: 500px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 15px 50px 15px 20px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.search-box input:focus {
+    border-color: #009688;
+}
+
+.search-box .search-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+    font-size: 20px;
+}
+
+.stats-section {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #009688, #00796b);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    min-width: 150px;
+    box-shadow: 0 4px 15px rgba(0,150,136,0.3);
+}
+
+.stat-card .number {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.stat-card .label {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.note-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    position: relative;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.note-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+}
+
+.note-card .privacy-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.privacy-badge.private {
+    background-color: #ff6b6b;
+    color: white;
+}
+
+.privacy-badge.public {
+    background-color: #51cf66;
+    color: white;
+}
+
+.note-card h3 {
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 18px;
+    padding-right: 60px;
+}
+
+.note-card .note-meta {
+    color: #666;
+    font-size: 12px;
+    margin-bottom: 15px;
+}
+
+.note-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-primary {
+    background-color: #009688;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #007b6f;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+}
+
+.empty-state i {
+    font-size: 64px;
+    color: #ddd;
+    margin-bottom: 20px;
+}
+
+.empty-state h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.empty-state p {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.upload-btn {
+    background-color: #009688;
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s;
+}
+
+.upload-btn:hover {
+    background-color: #007b6f;
+}
+
+@media (max-width: 768px) {
+    .my-notes-container {
+        margin: 20px auto;
+        padding: 15px;
+    }
+    
+    .page-header h1 {
+        font-size: 36px;
+    }
+    
+    .stats-section {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .notes-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .note-actions {
+        flex-wrap: wrap;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="my-notes-container">
+    <div class="page-header">
+        <h1>My Notes</h1>
+        <p>Manage your personal study materials</p>
+    </div>
+
+    <!-- Search Section -->
+    <div class="search-section">
+        <div class="search-box">
+            <form method="GET">
+                <input type="text" name="q" value="{{ query }}" placeholder="Search your notes..." autocomplete="off">
+                <i class="fa fa-search search-icon"></i>
+            </form>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="stats-section">
+        <div class="stat-card">
+            <div class="number">{{ my_pdfs.count }}</div>
+            <div class="label">Total Notes</div>
+        </div>
+        <div class="stat-card">
+            <div class="number">{{ my_pdfs|length|add:0 }}</div>
+            <div class="label">This Month</div>
+        </div>
+        <div class="stat-card">
+            <div class="number">{{ my_pdfs|length|add:0 }}</div>
+            <div class="label">Downloads</div>
+        </div>
+    </div>
+
+    <!-- Notes Grid -->
+    {% if my_pdfs %}
+        <div class="notes-grid">
+            {% for pdf in my_pdfs %}
+                <div class="note-card">
+                    <div class="privacy-badge {% if pdf.is_private %}private{% else %}public{% endif %}">
+                        {% if pdf.is_private %}
+                            <i class="fa fa-lock"></i> Private
+                        {% else %}
+                            <i class="fa fa-globe"></i> Public
+                        {% endif %}
+                    </div>
+                    
+                    <h3>{{ pdf.name }}</h3>
+                    
+                    <div class="note-meta">
+                        <i class="fa fa-calendar"></i> 
+                        Uploaded {{ pdf.created_at|date:"M d, Y" }}
+                        {% if pdf.updated_at != pdf.created_at %}
+                            • Updated {{ pdf.updated_at|date:"M d, Y" }}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="note-actions">
+                        <a href="{{ pdf.file.url }}" target="_blank" class="btn btn-primary">
+                            <i class="fa fa-eye"></i> View
+                        </a>
+                        
+                        <a href="{% url 'edit_pdf' pdf.id %}" class="btn btn-secondary">
+                            <i class="fa fa-edit"></i> Edit
+                        </a>
+                        
+                        <a href="{% url 'delete_pdf' pdf.id %}" class="btn btn-danger" 
+                           onclick="return confirm('Are you sure you want to delete this PDF?')">
+                            <i class="fa fa-trash"></i> Delete
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <i class="fa fa-file-pdf-o"></i>
+            <h3>No notes found</h3>
+            {% if query %}
+                <p>No notes match your search "{{ query }}". Try a different search term.</p>
+                <a href="{% url 'my_notes' %}" class="upload-btn">View All Notes</a>
+            {% else %}
+                <p>You haven't uploaded any notes yet. Start building your study vault!</p>
+                <a href="{% url 'upload_pdf' %}" class="upload-btn">Upload Your First Note</a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

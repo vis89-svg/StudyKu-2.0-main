@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000  # Better for development
+    volumes:
+      - .:/app
+      - ./media:/app/media           # ✅ Correct
+      - ./static:/app/static         # ✅ Fixed - map to /app/static, not subfolder
+      - ./pdfmanager:/app/pdfmanager # ✅ Added - so your images are accessible
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=dev-secret-key-change-in-production
+      - DATABASE_URL=postgresql://myuser:mypassword@db:5432/mydb  # ✅ Added DB connection
+    depends_on:
+      - db
+      - redis  # ✅ Added for future Celery
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"  # ✅ Added so you can connect from outside if needed
+
+  redis:  # ✅ Added for your future Redis + Celery setup
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:

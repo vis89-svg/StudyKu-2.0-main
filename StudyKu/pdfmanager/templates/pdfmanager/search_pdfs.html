@@ -1,0 +1,821 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <title>Study Ku</title>
+    
+    <style>
+        /* Keep all your existing styles */
+        .oauth-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #e0e0e0;
+            z-index: 2000;
+            padding: 8px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: "Montserrat", sans-serif;
+            font-size: 13px;
+        }
+        
+        .oauth-nav .nav-left a {
+            color: #009688;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .oauth-nav .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .oauth-nav .nav-right a {
+            text-decoration: none;
+            color: #333;
+            padding: 5px 12px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            font-size: 12px;
+        }
+        
+        .oauth-nav .nav-right a:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .oauth-nav .login-btn {
+            background-color: #009688 !important;
+            color: white !important;
+            font-weight: 500;
+        }
+        
+        .oauth-nav .login-btn:hover {
+            background-color: #007b6f !important;
+        }
+        
+        .oauth-nav .user-info {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .oauth-nav .logout-btn {
+            background-color: #dc3545 !important;
+            color: white !important;
+            font-size: 11px;
+        }
+        
+        .oauth-nav .logout-btn:hover {
+            background-color: #c82333 !important;
+        }
+
+        /* Messages */
+        .messages {
+            position: fixed;
+            top: 50px;
+            right: 20px;
+            z-index: 2001;
+            max-width: 300px;
+        }
+        
+        .alert {
+            padding: 8px 15px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            font-family: "Montserrat", sans-serif;
+            font-size: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .alert-info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        
+        .alert-danger {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        /* Search Results Styles */
+        .search-results {
+            margin: 20px 50px;
+            font-family: "Montserrat", sans-serif;
+        }
+
+        .pdf-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .pdf-item h4 {
+            color: #009688;
+            margin: 0 0 10px 0;
+            font-size: 18px;
+        }
+
+        .pdf-item p {
+            color: #666;
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .pdf-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: #009688;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #007b6f;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-family: "Montserrat", sans-serif;
+        }
+
+        /* Keep all your existing body/container styles */
+        body, html {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            background: white;
+            padding-top: 45px;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: white;
+            padding: 0;
+            color: #333;
+        }
+
+        .main-container {
+            margin-top: -80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 50px;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        /* Show search results when query exists */
+        .search-mode .main-container {
+            display: none;
+        }
+
+        .search-mode .search-results {
+            display: block;
+        }
+
+        /* Hide search results when no query */
+        .search-results {
+            display: none;
+        }
+
+        /* Left Section - keep all existing styles */
+        .left-section {
+            max-width: 50%;
+        }
+
+        .left-section .logo {
+            height: 50px;
+            margin-bottom: 20px;
+        }
+
+        .left-section h1 {
+            font-size: 50px;
+            margin: 10px 0;
+        }
+
+        .left-section .highlight {
+            color: #009688;
+            font-weight: bold;
+            font-size: 50px;
+            font-family: "Montserrat", sans-serif;
+        }
+
+        .left-section p {
+            font-size: 20px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            margin-left: 10px;
+            font-family: "Montserrat", sans-serif;
+        }
+
+        .left-section .search {
+            display: flex;
+            align-items: center;
+            position: relative;
+            max-width: 400px;
+        }
+
+        .left-section .search input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            outline: none;
+            font-family: "Montserrat", sans-serif;
+        }
+
+        .left-section .search button {
+            position: absolute;
+            right: 10px;
+            background-color: transparent;
+            border: none;
+            font-size: 1.2rem;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .left-section .vault{
+            margin-top: -20px;
+            margin-left: 10px;
+            font-weight: bold;
+            font-size: 50px;
+            font-family: "Montserrat", sans-serif;
+        }
+
+        /* All your other existing styles... */
+        .right-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .suggestions {
+            position: absolute;
+            top: 70px;
+            width: 100%;
+            background-color: white;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            font-family: "Montserrat", sans-serif;
+        }
+
+        .suggestions div {
+            padding: 10px;
+            border-bottom: 1px solid #f0f0f0;
+            color: black;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .suggestions div:hover {
+            background-color: #f0f0f0;
+        }
+
+        .suggestion-text {
+            flex: 1;
+        }
+
+        .bookmark-icon {
+            padding: 5px;
+            color: #999;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.3s;
+        }
+
+        .bookmark-icon:hover {
+            background-color: #009688;
+            color: white;
+        }
+
+        .bookmark-icon.bookmarked {
+            color: #009688;
+        }
+
+        /* Popup styles */
+        .bookmark-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            z-index: 3000;
+            font-family: "Montserrat", sans-serif;
+            text-align: center;
+            display: none;
+        }
+
+        .bookmark-popup.show {
+            display: block;
+            animation: popupShow 0.3s ease-out;
+        }
+
+        .bookmark-popup .popup-icon {
+            font-size: 24px;
+            color: #009688;
+            margin-bottom: 10px;
+        }
+
+        .bookmark-popup .popup-text {
+            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        @keyframes popupShow {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.2);
+            z-index: 2999;
+            display: none;
+        }
+
+        .popup-overlay.show {
+            display: block;
+        }
+
+        .search_input {
+            margin-top: 20px;
+            width: 18cm !important;
+            height: 0.5cm;
+            padding: 0 35px 0 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+            font-family: "Montserrat", sans-serif;
+        }
+
+        .search_icon {
+            position: absolute;
+            top: 65%;
+            right: 10px;
+            transform: translateY(-50%);
+            font-size: 24px;
+            color: #000;
+        }
+
+        .heading-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            text-align: center;
+        }
+
+        .heading-wrapper .highlight {
+            color: teal;
+            font-weight: bold;
+            font-family: "Montserrat", sans-serif;
+            font-size: 50px;
+        }
+
+        .heading-wrapper p {
+            font-size: 50px;
+            font-weight: bold;
+            color: #000;
+            font-family: "Montserrat", sans-serif;
+        }
+
+        .left-section .lowkey{
+            margin-top: 10px;
+            font-size: 20px;
+            font-family: "Montserrat", sans-serif;
+        }
+
+        .image-row {
+            margin-top: -30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 10px;
+            z-index: 1000;
+        }
+
+        .left-image,
+        .right-image {
+            gap: -20px;
+            width: 20%;
+            max-width: 150px;
+            height: auto;
+        }
+
+        .left-image{
+            height: 50px;
+            width: 50px;
+            margin-left: 80px;
+        }
+
+        .right-image{
+            margin-right: 30px;
+            height: 125px;
+            width: 125px;
+        }
+
+        .my-image-class {
+            margin-top: 20px;
+            margin-left: 120px;
+            height: 690px;
+            width: 740px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        /* All your media queries remain the same */
+    </style>
+</head>
+<body {% if query %}class="search-mode"{% endif %}>
+    <!-- OAuth Navigation -->
+    <nav class="oauth-nav">
+        <div class="nav-left">
+            <a href="{% url 'search_pdfs' %}">UCEK Study Vault</a>
+        </div>
+        <div class="nav-right">
+            {% if user.is_authenticated %}
+                <a href="{% url 'my_notes' %}">My Notes</a>
+                <a href="{% url 'bookmarks' %}">Bookmarks</a>
+                <a href="{% url 'search_history' %}">History</a>
+                <span class="user-info">Hello, {{ user.first_name|default:user.username }}!</span>
+                <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+            {% else %}
+                <a href="{% url 'account_login' %}" class="login-btn">
+                    <i class="fa fa-google"></i> Sign in
+                </a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Bookmark Popup -->
+    <div class="popup-overlay" id="popupOverlay"></div>
+    <div class="bookmark-popup" id="bookmarkPopup">
+        <div class="popup-icon">
+            <i class="fa fa-bookmark"></i>
+        </div>
+        <div class="popup-text" id="popupText">Saved to Bookmarks!</div>
+    </div>
+
+    <!-- Search Results Section -->
+    <div class="search-results">
+        {% if query %}
+            <h2 style="margin-left: 20px; color: #009688; font-family: 'Montserrat', sans-serif;">
+                Search Results for "{{ query }}"
+            </h2>
+            
+            {% if results %}
+                {% for pdf in results %}
+                    <div class="pdf-item">
+                        <h4>{{ pdf.name }}</h4>
+                        <p>{{ pdf.description|truncatewords:20|default:"No description available" }}</p>
+                        <p><small><i class="fa fa-calendar"></i> Uploaded: {{ pdf.upload_date|date:"M d, Y" }}</small></p>
+                        {% if pdf.author %}
+                            <p><small><i class="fa fa-user"></i> By: {{ pdf.author.first_name|default:pdf.author.username }}</small></p>
+                        {% endif %}
+                        
+                        <div class="pdf-actions">
+                            <!-- View PDF Button -->
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'view_pdf' pdf.id %}" class="btn btn-primary">
+                                    <i class="fa fa-eye"></i> View PDF
+                                </a>
+                            {% else %}
+                                <a href="{{ pdf.file.url }}" target="_blank" class="btn btn-primary">
+                                    <i class="fa fa-eye"></i> View PDF
+                                </a>
+                            {% endif %}
+                            
+                            <!-- Bookmark Button (only for logged in users) -->
+                            {% if user.is_authenticated %}
+                                {% if pdf.id in user_bookmarks %}
+                                    <a href="{% url 'remove_bookmark' pdf.id %}" class="btn btn-warning">
+                                        <i class="fa fa-bookmark"></i> Remove Bookmark
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'add_bookmark' pdf.id %}" class="btn btn-success">
+                                        <i class="fa fa-bookmark-o"></i> Add Bookmark
+                                    </a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-results">
+                    <i class="fa fa-search" style="font-size: 48px; color: #ccc; margin-bottom: 20px;"></i>
+                    <h3>No PDFs found for "{{ query }}"</h3>
+                    <p>Try searching with different keywords or <a href="{% url 'upload_pdf' %}">upload your own PDF</a>.</p>
+                </div>
+            {% endif %}
+            
+            <div style="text-align: center; margin: 40px 0;">
+                <a href="{% url 'search_pdfs' %}" class="btn btn-primary">
+                    <i class="fa fa-home"></i> Back to Home
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Original Homepage Content (shown when no search) -->
+    <div class="image-row">
+        <img src="{% static 'images/ku.png' %}" alt="Left Image" class="left-image" style="margin-left: 140px;">
+        <img src="{% static 'images/dec.png' %}" alt="Right Image" class="right-image" style="margin-right: 180px;">
+    </div>
+    
+    <div class="main-container">
+        <!-- Left Section -->
+        <div class="left-section">
+            <div class="heading-wrapper" style="margin-left: -80px;">
+                <p><span class="highlight">UCEK</span></p>
+                <p>Study</p>
+            </div>
+            
+            <p class="vault">Vault</p>
+            <p class="lowkey">Search it.Get it</p>
+            
+            <!-- Search Form -->
+            <form method="GET" action="{% url 'search_pdfs' %}">
+                <div class="search">
+                    <input class="search_input" type="text" name="q" id="search" placeholder="Search for your Materials" autocomplete="off" value="{{ query }}">
+                    <button type="submit" class="search_icon" style="background: none; border: none;">
+                        <i class="fa fa-search"></i>
+                    </button>
+                    <a href="{% url 'upload_pdf' %}" class="search_icon" style="right: 40px;">
+                        <i class="fa fa-upload"></i>
+                    </a>
+
+                    <div id="suggestions" class="suggestions" style="display: none;">
+                        <!-- Suggestions will appear here dynamically -->
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Right Section -->
+        <div class="right-section">
+            <img src="{% static 'images/feedimg.png' %}" alt="Sample Image" class="my-image-class">
+        </div>
+    </div>
+
+    <script>
+        // Auto-complete search functionality
+        const searchInput = document.getElementById('search');
+        const suggestionsBox = document.getElementById('suggestions');
+        let userBookmarks = [];
+        let pdfData = {};
+
+        // Get user bookmarks from server if authenticated
+        {% if user.is_authenticated %}
+            userBookmarks = {{ user_bookmarks|safe }};
+        {% endif %}
+
+        // Popup functions
+        function showPopup(message, isBookmarked = true) {
+            const popup = document.getElementById('bookmarkPopup');
+            const overlay = document.getElementById('popupOverlay');
+            const popupText = document.getElementById('popupText');
+            const popupIcon = popup.querySelector('.popup-icon i');
+            
+            popupText.textContent = message;
+            
+            if (isBookmarked) {
+                popupIcon.className = 'fa fa-bookmark';
+                popupIcon.style.color = '#009688';
+            } else {
+                popupIcon.className = 'fa fa-bookmark-o';
+                popupIcon.style.color = '#dc3545';
+            }
+            
+            overlay.classList.add('show');
+            popup.classList.add('show');
+            
+            setTimeout(() => {
+                overlay.classList.remove('show');
+                popup.classList.remove('show');
+            }, 2000);
+        }
+
+        // Handle bookmark clicks
+        function handleBookmarkClick(e, pdfId, pdfName) {
+            e.stopPropagation();
+            
+            {% if user.is_authenticated %}
+                const isBookmarked = userBookmarks.includes(pdfId);
+                const action = isBookmarked ? 'remove' : 'add';
+                const url = `/bookmark/${action}/${pdfId}/`;
+                
+                fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        if (isBookmarked) {
+                            userBookmarks = userBookmarks.filter(id => id !== pdfId);
+                            showPopup('Removed from Bookmarks!', false);
+                        } else {
+                            userBookmarks.push(pdfId);
+                            showPopup('Saved to Bookmarks!', true);
+                        }
+                        
+                        // Update the icon in the suggestion
+                        const icon = e.target;
+                        if (isBookmarked) {
+                            icon.className = 'fa fa-bookmark-o bookmark-icon';
+                            icon.classList.remove('bookmarked');
+                        } else {
+                            icon.className = 'fa fa-bookmark bookmark-icon bookmarked';
+                            icon.classList.add('bookmarked');
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Bookmark error:', error);
+                });
+            {% else %}
+                showPopup('Please login to bookmark PDFs!', false);
+            {% endif %}
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const query = this.value;
+
+                if (query.length > 0) {
+                    fetch(`?q=${query}`, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        pdfData = data.pdfData || {};
+                        suggestionsBox.innerHTML = '';
+                        
+                        if (data.suggestions.length > 0) {
+                            suggestionsBox.style.display = 'block';
+                            
+                            data.suggestions.forEach((suggestion, index) => {
+                                const div = document.createElement('div');
+                                
+                                // Create text span
+                                const textSpan = document.createElement('span');
+                                textSpan.textContent = suggestion;
+                                textSpan.className = 'suggestion-text';
+                                
+                                // Create bookmark icon
+                                {% if user.is_authenticated %}
+                                    const bookmarkIcon = document.createElement('i');
+                                    const pdfId = data.pdfIds ? data.pdfIds[suggestion] : null;
+                                    
+                                    if (pdfId && userBookmarks.includes(pdfId)) {
+                                        bookmarkIcon.className = 'fa fa-bookmark bookmark-icon bookmarked';
+                                    } else {
+                                        bookmarkIcon.className = 'fa fa-bookmark-o bookmark-icon';
+                                    }
+                                    
+                                    bookmarkIcon.addEventListener('click', (e) => {
+                                        if (pdfId) {
+                                            handleBookmarkClick(e, pdfId, suggestion);
+                                        }
+                                    });
+                                    
+                                    div.appendChild(textSpan);
+                                    div.appendChild(bookmarkIcon);
+                                {% else %}
+                                    div.appendChild(textSpan);
+                                {% endif %}
+
+                                // Click on text to open PDF directly
+                                textSpan.addEventListener('click', function() {
+                                    const pdfUrl = data.pdfUrls[suggestion];
+                                    console.log('PDF URL for', suggestion, ':', pdfUrl); // Debug log
+                                    if (pdfUrl) {
+                                        // Open PDF directly in new tab
+                                        window.open(pdfUrl, '_blank');
+                                    } else {
+                                        console.log('No PDF URL found for suggestion:', suggestion);
+                                    }
+                                    suggestionsBox.style.display = 'none';
+                                });
+                                
+                                suggestionsBox.appendChild(div);
+                            });
+                        } else {
+                            suggestionsBox.style.display = 'none';
+                        }
+                    });
+                } else {
+                    suggestionsBox.style.display = 'none';
+                }
+            });
+
+            document.addEventListener('click', function(event) {
+                if (!suggestionsBox.contains(event.target) && event.target !== searchInput) {
+                    suggestionsBox.style.display = 'none';
+                }
+            });
+        }
+
+        // Auto-hide messages
+        setTimeout(function() {
+            const messages = document.querySelectorAll('.alert');
+            messages.forEach(function(message) {
+                message.style.opacity = '0';
+                setTimeout(function() {
+                    message.remove();
+                }, 300);
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

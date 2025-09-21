@@ -1,0 +1,486 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit PDF - Study Ku{% endblock %}
+
+{% block extra_css %}
+<style>
+.edit-container {
+    max-width: 700px;
+    margin: 50px auto;
+    padding: 20px;
+    font-family: "Montserrat", sans-serif;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.page-header h1 {
+    color: #009688;
+    font-size: 42px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.page-header p {
+    font-size: 16px;
+    color: #666;
+}
+
+.current-file-info {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid #009688;
+    margin-bottom: 30px;
+}
+
+.current-file-info h3 {
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.file-details {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px 20px;
+    font-size: 14px;
+}
+
+.file-details .label {
+    font-weight: 600;
+    color: #666;
+}
+
+.file-details .value {
+    color: #333;
+}
+
+.privacy-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.privacy-badge.private {
+    background-color: #ff6b6b;
+    color: white;
+}
+
+.privacy-badge.public {
+    background-color: #51cf66;
+    color: white;
+}
+
+.edit-form {
+    background: white;
+    padding: 35px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    border: 1px solid #e0e0e0;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+}
+
+.form-group input[type="text"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #009688;
+    box-shadow: 0 0 0 3px rgba(0,150,136,0.1);
+}
+
+.file-input-section {
+    margin-bottom: 25px;
+}
+
+.current-file-display {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    margin-bottom: 15px;
+}
+
+.current-file-display i {
+    color: #dc3545;
+    font-size: 24px;
+    margin-right: 10px;
+}
+
+.current-file-name {
+    font-weight: 600;
+    color: #333;
+}
+
+.file-replace-option {
+    margin-top: 15px;
+}
+
+.file-replace-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.file-replace-toggle input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #009688;
+}
+
+.file-input-wrapper {
+    position: relative;
+    overflow: hidden;
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    padding: 25px;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: none;
+}
+
+.file-input-wrapper.show {
+    display: block;
+}
+
+.file-input-wrapper:hover {
+    border-color: #009688;
+    background-color: rgba(0,150,136,0.05);
+}
+
+.file-input-wrapper input[type="file"] {
+    position: absolute;
+    left: -9999px;
+}
+
+.file-upload-text i {
+    font-size: 36px;
+    color: #009688;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.privacy-section {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #009688;
+}
+
+.privacy-toggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.privacy-toggle input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: #009688;
+}
+
+.privacy-info {
+    margin-top: 12px;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.5;
+}
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 35px;
+}
+
+.btn {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #009688, #00796b);
+    color: white;
+    box-shadow: 0 4px 15px rgba(0,150,136,0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,150,136,0.4);
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    transform: translateY(-1px);
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: #009688;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.back-link i {
+    margin-right: 5px;
+}
+
+.form-help-text {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+}
+
+@media (max-width: 768px) {
+    .edit-container {
+        margin: 20px auto;
+        padding: 15px;
+    }
+    
+    .page-header h1 {
+        font-size: 32px;
+    }
+    
+    .edit-form {
+        padding: 25px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .file-details {
+        grid-template-columns: 1fr;
+        gap: 5px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="edit-container">
+    <a href="{% url 'my_notes' %}" class="back-link">
+        <i class="fa fa-arrow-left"></i> Back to My Notes
+    </a>
+    
+    <div class="page-header">
+        <h1><i class="fa fa-edit"></i> Edit PDF</h1>
+        <p>Update your PDF details and settings</p>
+    </div>
+
+    <!-- Current File Info -->
+    <div class="current-file-info">
+        <h3><i class="fa fa-file-pdf-o"></i> Current File Details</h3>
+        <div class="file-details">
+            <span class="label">Name:</span>
+            <span class="value">{{ pdf.name }}</span>
+            
+            <span class="label">Uploaded:</span>
+            <span class="value">{{ pdf.created_at|date:"M d, Y g:i A" }}</span>
+            
+            {% if pdf.updated_at != pdf.created_at %}
+            <span class="label">Last Updated:</span>
+            <span class="value">{{ pdf.updated_at|date:"M d, Y g:i A" }}</span>
+            {% endif %}
+            
+            <span class="label">Visibility:</span>
+            <span class="value">
+                <span class="privacy-badge {% if pdf.is_private %}private{% else %}public{% endif %}">
+                    {% if pdf.is_private %}
+                        <i class="fa fa-lock"></i> Private
+                    {% else %}
+                        <i class="fa fa-globe"></i> Public
+                    {% endif %}
+                </span>
+            </span>
+            
+            <span class="label">Current File:</span>
+            <span class="value">
+                <a href="{{ pdf.file.url }}" target="_blank" style="color: #009688; text-decoration: none;">
+                    <i class="fa fa-external-link"></i> View Current PDF
+                </a>
+            </span>
+        </div>
+    </div>
+
+    <!-- Edit Form -->
+    <form method="post" enctype="multipart/form-data" class="edit-form">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="{{ form.name.id_for_label }}">PDF Name</label>
+            {{ form.name }}
+            <div class="form-help-text">Give your PDF a descriptive name so others can find it easily</div>
+        </div>
+
+        <div class="file-input-section">
+            <label>PDF File</label>
+            
+            <div class="current-file-display">
+                <i class="fa fa-file-pdf-o"></i>
+                <span class="current-file-name">{{ pdf.file.name|default:"Current file" }}</span>
+            </div>
+            
+            <div class="file-replace-option">
+                <div class="file-replace-toggle">
+                    <input type="checkbox" id="replace-file" onchange="toggleFileInput()">
+                    <label for="replace-file">Replace with a new file</label>
+                </div>
+                
+                <div class="file-input-wrapper" id="file-wrapper">
+                    {{ form.file }}
+                    <div class="file-upload-text">
+                        <i class="fa fa-cloud-upload"></i>
+                        <div>
+                            <strong>Click to browse</strong> or drag and drop your new PDF here
+                            <br><small>Maximum file size: 50MB</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="privacy-section">
+                <div class="privacy-toggle">
+                    {{ form.is_private }}
+                    <label for="{{ form.is_private.id_for_label }}">Make this PDF private</label>
+                </div>
+                <div class="privacy-info">
+                    <div><i class="fa fa-globe"></i> <strong>Public:</strong> Anyone can search and view this PDF</div>
+                    <div><i class="fa fa-lock"></i> <strong>Private:</strong> Only you can see this PDF in your "My Notes" section</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <i class="fa fa-save"></i> Save Changes
+            </button>
+            <a href="{% url 'my_notes' %}" class="btn btn-secondary">
+                <i class="fa fa-times"></i> Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleFileInput() {
+    const checkbox = document.getElementById('replace-file');
+    const fileWrapper = document.getElementById('file-wrapper');
+    
+    if (checkbox.checked) {
+        fileWrapper.classList.add('show');
+    } else {
+        fileWrapper.classList.remove('show');
+        // Clear the file input
+        const fileInput = fileWrapper.querySelector('input[type="file"]');
+        fileInput.value = '';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.querySelector('input[type="file"]');
+    const fileWrapper = document.getElementById('file-wrapper');
+
+    // File input change handler
+    fileInput.addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            const file = e.target.files[0];
+            if (file.type === 'application/pdf') {
+                const uploadText = fileWrapper.querySelector('.file-upload-text div');
+                uploadText.innerHTML = `
+                    <strong>${file.name}</strong>
+                    <br><small>Size: ${(file.size / (1024 * 1024)).toFixed(2)} MB</small>
+                `;
+                fileWrapper.style.borderColor = '#009688';
+                fileWrapper.style.backgroundColor = 'rgba(0,150,136,0.05)';
+            } else {
+                alert('Please select a valid PDF file.');
+                fileInput.value = '';
+            }
+        }
+    });
+
+    // Drag and drop handlers
+    fileWrapper.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        fileWrapper.style.borderColor = '#009688';
+        fileWrapper.style.backgroundColor = 'rgba(0,150,136,0.1)';
+    });
+
+    fileWrapper.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        fileWrapper.style.borderColor = '#ddd';
+        fileWrapper.style.backgroundColor = 'transparent';
+    });
+
+    fileWrapper.addEventListener('drop', function(e) {
+        e.preventDefault();
+        fileWrapper.style.borderColor = '#ddd';
+        fileWrapper.style.backgroundColor = 'transparent';
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0 && files[0].type === 'application/pdf') {
+            fileInput.files = files;
+            fileInput.dispatchEvent(new Event('change'));
+        } else {
+            alert('Please select a valid PDF file.');
+        }
+    });
+
+    // Click handler for wrapper
+    fileWrapper.addEventListener('click', function() {
+        fileInput.click();
+    });
+});
+</script>
+{% endblock %}
