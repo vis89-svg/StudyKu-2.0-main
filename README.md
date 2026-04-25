@@ -7,7 +7,7 @@ It includes features like **Google OAuth login**, **PDF uploads**, **search with
 
 ---
 
-## 🚀 Features
+## 🚀 KEY Features
 
 * 🔐 **Google Authentication (OAuth 2.0)**
 * 📂 **Upload & manage study PDFs**
